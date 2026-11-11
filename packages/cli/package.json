@@ -1,0 +1,28 @@
+{
+  "name": "@ambit/cli",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The ambit command line tool.",
+  "type": "module",
+  "bin": {
+    "ambit": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@ambit/core": "workspace:*",
+    "@ambit/evidence": "workspace:*",
+    "@ambit/mandate": "workspace:*",
+    "@ambit/sdk": "workspace:*"
+  }
+}

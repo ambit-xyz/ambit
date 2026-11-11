@@ -1,0 +1,24 @@
+[workspace]
+resolver = "2"
+members = ["contracts/*"]
+
+[workspace.package]
+edition = "2021"
+version = "0.0.0"
+publish = false
+
+[workspace.dependencies]
+# Pinned to OpenZeppelin stellar-contracts v0.8.0.
+# soroban-sdk follows what stellar-contracts v0.8.0 requires.
+soroban-sdk = "28.0.0"
+stellar-accounts = "=0.8.0"
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true

@@ -1,0 +1,22 @@
+{
+  "name": "@ambit/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "RPC client, account reader, pre-check, network config.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@ambit/mandate": "workspace:*"
+  }
+}

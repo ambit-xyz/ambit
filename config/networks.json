@@ -1,0 +1,18 @@
+{
+  "testnet": {
+    "networkPassphrase": "Test SDF Network ; September 2015",
+    "rpcUrl": "https://soroban-testnet.stellar.org",
+    "usdcSac": null,
+    "accountWasmHash": "c514d35ea67eaea9bfc1fb3327854c0c06111bc1ddebd4fe217c504c1004b9e1",
+    "verifiers": { "ed25519": null, "webauthn": null },
+    "policies": { "spendingLimit": null, "ambitPolicy": null }
+  },
+  "mainnet": {
+    "networkPassphrase": "Public Global Stellar Network ; September 2015",
+    "rpcUrl": null,
+    "usdcSac": null,
+    "accountWasmHash": "c514d35ea67eaea9bfc1fb3327854c0c06111bc1ddebd4fe217c504c1004b9e1",
+    "verifiers": { "ed25519": null, "webauthn": null },
+    "policies": { "spendingLimit": null, "ambitPolicy": null }
+  }
+}
