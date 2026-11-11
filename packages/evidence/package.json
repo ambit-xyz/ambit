@@ -1,0 +1,23 @@
+{
+  "name": "@ambit/evidence",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Evidence record writer, hash chain, verifier, JSON and CSV export.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@ambit/core": "workspace:*",
+    "@ambit/mandate": "workspace:*"
+  }
+}

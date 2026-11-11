@@ -1,0 +1,29 @@
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Rust
+target/
+
+# Local secrets and runtime data. Never commit keys or evidence logs.
+.env
+.env.*
+!.env.example
+*.key
+.ambit/
+
+# Team-only AI context, never public
+CLAUDE.local.md
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

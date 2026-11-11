@@ -1,0 +1,24 @@
+{
+  "name": "@ambit/mcp",
+  "version": "0.0.0",
+  "private": true,
+  "description": "MCP server: get_mandate, pay, list_payments.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@ambit/core": "workspace:*",
+    "@ambit/evidence": "workspace:*",
+    "@ambit/sdk": "workspace:*"
+  }
+}

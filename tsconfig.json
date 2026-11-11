@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/mandate" },
+    { "path": "packages/core" },
+    { "path": "packages/sdk" },
+    { "path": "packages/evidence" },
+    { "path": "packages/mcp" },
+    { "path": "packages/cli" }
+  ]
+}

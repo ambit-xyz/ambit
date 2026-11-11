@@ -1,0 +1,23 @@
+{
+  "name": "@ambit/sdk",
+  "version": "0.0.0",
+  "private": true,
+  "description": "ambit.fetch(): pays x402 and MPP requests from a smart account.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@ambit/core": "workspace:*",
+    "@ambit/mandate": "workspace:*"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@ambit/mandate",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Mandate schema, validator, canonical hash and compiler. No network code, runs in browser and Node.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {}
+}
