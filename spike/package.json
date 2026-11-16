@@ -1,0 +1,19 @@
+{
+  "name": "ambit-spike",
+  "private": true,
+  "type": "module",
+  "description": "Throwaway testnet experiments. Not part of the workspace.",
+  "scripts": {
+    "run": "tsx"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "16.4.1",
+    "@x402/core": "2.30.0",
+    "@x402/stellar": "2.30.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3"
+  }
+}

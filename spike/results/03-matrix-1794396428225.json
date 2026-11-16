@@ -1,0 +1,178 @@
+{
+  "spendEnd": {
+    "cached_total_spent": "100000000",
+    "period_ledgers": 720,
+    "spending_history": [
+      {
+        "amount": "10000000",
+        "ledger_sequence": 5674536
+      },
+      {
+        "amount": "10000000",
+        "ledger_sequence": 5674545
+      },
+      {
+        "amount": "80000000",
+        "ledger_sequence": 5674548
+      }
+    ],
+    "spending_limit": "100000000"
+  },
+  "results": [
+    {
+      "check": "agent transfer 1 USDC to payee-a",
+      "expect": "pass",
+      "balanceBefore": "500000000",
+      "balanceAfter": "490000000",
+      "ok": true,
+      "stage": "done",
+      "hash": "a1f7b4bbd4af415be0e7b854c29323bec8690410f1dd751e60a10d10bd3f9f95",
+      "fee": "469986",
+      "resourceFee": "469886",
+      "cpuInsns": 3397095,
+      "readBytes": 116,
+      "writeBytes": 804,
+      "returnValue": null
+    },
+    {
+      "check": "transfer signed by payee-b (not a signer)",
+      "expect": "fail",
+      "balanceBefore": "490000000",
+      "balanceAfter": "490000000",
+      "ok": false,
+      "stage": "simulate-enforce",
+      "error": "Error(Auth, InvalidAction) Error(Auth, InvalidAction) Error(Contract, #3016) Error(Contract, #3016) Error(Contract, #3016) Error(Contract, #3016)"
+    },
+    {
+      "check": "agent signs with owner rule id (wrong context_rule_ids)",
+      "expect": "fail",
+      "balanceBefore": "490000000",
+      "balanceAfter": "490000000",
+      "ok": false,
+      "stage": "simulate-enforce",
+      "error": "Error(Auth, InvalidAction) Error(Auth, InvalidAction) Error(Contract, #3002) Error(Contract, #3002) Error(Contract, #3002) Error(Contract, #3002)"
+    },
+    {
+      "check": "agent adds a context rule on the account",
+      "expect": "fail",
+      "balanceBefore": "490000000",
+      "balanceAfter": "490000000",
+      "ok": false,
+      "stage": "simulate-enforce",
+      "error": "Error(Auth, InvalidAction) Error(Auth, InvalidAction) Error(Auth, InvalidAction) Error(Contract, #3002) Error(Contract, #3002) Error(Contract, #3002) Error(Contract, #3002)"
+    },
+    {
+      "check": "agent calls upgrade on the account",
+      "expect": "fail",
+      "balanceBefore": "490000000",
+      "balanceAfter": "490000000",
+      "ok": false,
+      "stage": "simulate-enforce",
+      "error": "Error(Auth, InvalidAction) Error(Auth, InvalidAction) Error(Auth, InvalidAction) Error(Contract, #3002) Error(Contract, #3002) Error(Contract, #3002) Error(Contract, #3002)"
+    },
+    {
+      "check": "agent calls execute on the account",
+      "expect": "fail",
+      "balanceBefore": "490000000",
+      "balanceAfter": "490000000",
+      "ok": false,
+      "stage": "simulate-record",
+      "error": "Error(Contract, #13) Error(Contract, #13) Error(Contract, #13) Error(Contract, #13)"
+    },
+    {
+      "check": "agent raises its own spending limit",
+      "expect": "fail",
+      "balanceBefore": "490000000",
+      "balanceAfter": "490000000",
+      "ok": false,
+      "stage": "simulate-record",
+      "error": "Error(WasmVm, InvalidAction) Error(WasmVm, InvalidAction)"
+    },
+    {
+      "check": "agent approves an allowance on USDC",
+      "expect": "fail",
+      "balanceBefore": "490000000",
+      "balanceAfter": "490000000",
+      "ok": false,
+      "stage": "simulate-enforce",
+      "error": "Error(Auth, InvalidAction) Error(Auth, InvalidAction) Error(Contract, #3223) Error(Contract, #3223) Error(Contract, #3223) Error(Contract, #3223) Error(Contract, #3223) Error(Contract, #3223) Error(Contract, #3223)"
+    },
+    {
+      "check": "agent transfers 1 USDC to an arbitrary address (no allow-list yet)",
+      "expect": "pass",
+      "balanceBefore": "490000000",
+      "balanceAfter": "480000000",
+      "ok": true,
+      "stage": "done",
+      "hash": "b37976a3cf538cf7bfd67d28057e322eb90d8682d48af1556a6b406ab0a3a096",
+      "fee": "58585",
+      "resourceFee": "58485",
+      "cpuInsns": 3406908,
+      "readBytes": 116,
+      "writeBytes": 884,
+      "returnValue": null
+    },
+    {
+      "check": "agent transfers 8 USDC (period total reaches the 10 USDC limit)",
+      "expect": "pass",
+      "balanceBefore": "480000000",
+      "balanceAfter": "400000000",
+      "ok": true,
+      "stage": "done",
+      "hash": "9a74b64d3cd071a8a673ef8943f862733e67460dc07b49bb705058fa6597878c",
+      "fee": "58622",
+      "resourceFee": "58522",
+      "cpuInsns": 3418692,
+      "readBytes": 116,
+      "writeBytes": 964,
+      "returnValue": null
+    },
+    {
+      "check": "one stroop over the period limit (simulation)",
+      "expect": "fail",
+      "balanceBefore": "400000000",
+      "balanceAfter": "400000000",
+      "ok": false,
+      "stage": "simulate-enforce",
+      "error": "Error(Auth, InvalidAction) Error(Auth, InvalidAction) Error(Contract, #3221) Error(Contract, #3221) Error(Contract, #3221) Error(Contract, #3221) Error(Contract, #3221) Error(Contract, #3221) Error(Contract, #3221)"
+    },
+    {
+      "check": "one stroop over the period limit (forced on-chain)",
+      "expect": "fail",
+      "balanceBefore": "400000000",
+      "balanceAfter": "400000000",
+      "ok": false,
+      "stage": "done",
+      "hash": "57cc20357ace42c8775f2f43aee1b5d25a23b1aa5c5664a97729063cd50e666a",
+      "error": "invokeHostFunctionTrapped [\"CAWPGCR6NZXBN6HZ6A437EUGKWMEBC576SQFL2I666NUZWK2RCG53X7V\",\"GCIH3MURWFMXVT6IDMJLGMJETA5C7YRFIJ6ETUJL372UCJAVU35VN7RI\",\"1\"] [{\"type\":\"Buffer\",\"data\":[10,149,108,191,162,111,178,99,236,150,16,58,197,185,24,69,48,121,244,63,65,90,67,106,227,27,239,164,14,227,133,90]},{\"context_rule_ids\":[1],\"signers\":{\"External,CAAVTMCBXEIBPR64EAASKFXERVPYFZA2JYP5A3BG6PESWEFUJX5IHKN4,\\u0014>���j4�\\u0019�<k��0��o�5���2K�\\bX�}\":{\"type\":\"Buffer\",\"data\":[249,158,126,175,90,240,65,96,225,84,16,137,20,184,44,66,45,168,75,60,37,29,31,41,23,171,142,61,16,228,211,152,40,248,57,139,16,32,50,29,238,195,62,1,33,174,97,254,5"
+    },
+    {
+      "check": "transfer signed by payee-b (forced on-chain)",
+      "expect": "fail",
+      "balanceBefore": "400000000",
+      "balanceAfter": "400000000",
+      "ok": false,
+      "stage": "done",
+      "hash": "7b9235d07c8788ca1b71e10586052d9777f1a56f6b93a7ff8661addecd1180f2",
+      "error": "invokeHostFunctionTrapped [\"CAWPGCR6NZXBN6HZ6A437EUGKWMEBC576SQFL2I666NUZWK2RCG53X7V\",\"GCIH3MURWFMXVT6IDMJLGMJETA5C7YRFIJ6ETUJL372UCJAVU35VN7RI\",\"1\"] [{\"type\":\"Buffer\",\"data\":[170,228,244,245,87,200,176,41,161,212,160,128,36,83,110,21,112,149,77,29,196,29,22,29,121,57,8,12,86,1,126,149]},{\"context_rule_ids\":[1],\"signers\":{\"External,CAAVTMCBXEIBPR64EAASKFXERVPYFZA2JYP5A3BG6PESWEFUJX5IHKN4,�MA\\u0018�3N�*\\u0011y�2�\\u0003��\\u001e4vY���b��\\u0003\\u0019^�\":{\"type\":\"Buffer\",\"data\":[154,219,165,112,101,69,51,209,10,189,201,218,110,247,149,41,243,68,83,14,159,158,160,231,1,178,40,84,221,117,208,236,169,186,67,221,167,204,9,5,35"
+    },
+    {
+      "check": "owner adds rule with a 21-byte name (simulation)",
+      "expect": "fail",
+      "balanceBefore": "400000000",
+      "balanceAfter": "400000000",
+      "ok": false,
+      "stage": "simulate-record",
+      "error": "Error(Contract, #3015) Error(Contract, #3015) Error(Contract, #3015)"
+    },
+    {
+      "check": "payee-a sends 1 USDC back into the account",
+      "expect": "pass",
+      "balanceBefore": "400000000",
+      "balanceAfter": "410000000",
+      "ok": true,
+      "stage": "done",
+      "returnValue": ""
+    }
+  ]
+}
