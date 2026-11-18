@@ -1,0 +1,30 @@
+{
+  "version": "ambit-mandate/0",
+  "id": "research-agent-dec",
+  "network": "testnet",
+  "account": "CAWPGCR6NZXBN6HZ6A437EUGKWMEBC576SQFL2I666NUZWK2RCG53X7V",
+  "agent": {
+    "label": "research-agent",
+    "signer": {
+      "type": "ed25519",
+      "publicKey": "GAKD5Q6X55VDJYQZU46GXUPLGCY6NMDPWU26TZNH5EZEXMYILDCX2ELL"
+    }
+  },
+  "asset": {
+    "code": "USDC",
+    "contract": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
+  },
+  "limits": {
+    "maxPerPayment": "20",
+    "maxPerPeriod": "100",
+    "period": "1d",
+    "maxPerDay": "50"
+  },
+  "payees": [
+    "GCIH3MURWFMXVT6IDMJLGMJETA5C7YRFIJ6ETUJL372UCJAVU35VN7RI",
+    "GCLU2QIYYIZU5RBKCF474MWUAOH76HRUOZM7JSXOMKV7O7YDDFPOXLZD"
+  ],
+  "validFrom": "2026-11-20T00:00:00Z",
+  "validUntil": "2026-12-31T23:59:59Z",
+  "description": "Pay for market data APIs used by the research agent"
+}
