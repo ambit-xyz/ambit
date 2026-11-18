@@ -1,0 +1,18 @@
+[
+  {
+    "fixture": "valid/basic.json",
+    "sha256": "803594ff35a70fcc3ca89feb8a54c2adf302354e3358d72c875757365dcc077d"
+  },
+  {
+    "fixture": "valid/mainnet-at-pilot-cap-contract-payee.json",
+    "sha256": "5ed082e30c37506e20385803ddb1fc3f21652d4a0098937c19c6079d7dcd4a30"
+  },
+  {
+    "fixture": "valid/smallest-amount-no-valid-from.json",
+    "sha256": "ff204482e8c10bcdc74d4c216486fab78f4b9ecc841fded2cf97915612db48c6"
+  },
+  {
+    "fixture": "valid/unicode-description.json",
+    "sha256": "83c465b54cf6a50108d4bf6536a49f56284002b6fe0415bae266225e463062f4"
+  }
+]
