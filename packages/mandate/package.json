@@ -16,5 +16,7 @@
   "scripts": {
     "build": "tsc -b"
   },
-  "dependencies": {}
+  "dependencies": {
+    "ajv": "8.17.1"
+  }
 }
