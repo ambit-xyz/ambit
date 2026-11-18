@@ -16,6 +16,7 @@ packages/mcp             MCP server
 packages/cli             `ambit` command
 apps/dashboard           owner dashboard (Next.js, static export)
 config/networks.json     per-network addresses
+scripts/                 deploy scripts (smart account on testnet)
 tests/                   e2e and shared fixtures
 ```
 
@@ -34,6 +35,8 @@ pnpm build            # TypeScript packages
 pnpm test             # vitest
 pnpm lint             # biome
 pnpm dashboard:dev
+pnpm test:testnet     # needs network, deploys a fresh account on testnet
+pnpm deploy:account --network testnet --owner G...
 
 cargo test            # contracts
 stellar contract build

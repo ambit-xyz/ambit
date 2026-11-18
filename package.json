@@ -14,7 +14,9 @@
     "format": "biome check --write .",
     "dashboard:dev": "pnpm --filter @ambit/dashboard dev",
     "dashboard:build": "pnpm --filter @ambit/dashboard build",
-    "clean": "pnpm -r exec rm -rf dist *.tsbuildinfo"
+    "clean": "pnpm -r exec rm -rf dist *.tsbuildinfo",
+    "deploy:account": "pnpm --filter @ambit/scripts deploy:account",
+    "test:testnet": "pnpm --filter @ambit/scripts test:testnet"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.6",
