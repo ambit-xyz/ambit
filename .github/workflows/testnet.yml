@@ -1,0 +1,32 @@
+name: testnet
+
+# Tests against Stellar testnet. Separate from `ci` because they depend on a public network:
+# testnet resets and RPC outages can fail them without a code change. Do not make this a
+# required check. Each run creates fresh keys funded by friendbot. No secrets are used.
+
+on:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: testnet-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testnet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:testnet
