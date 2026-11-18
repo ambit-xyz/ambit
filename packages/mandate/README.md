@@ -59,6 +59,22 @@ if (!result.ok) {
 }
 ```
 
+## Hash
+
+```ts
+import { mandateHash, mandateHashBytes } from "@ambit/mandate";
+
+mandateHash(mandate); // "803594ff35a70fcc3ca89feb8a54c2adf302354e3358d72c875757365dcc077d"
+```
+
+`mandateHash = SHA-256(UTF-8(RFC 8785 canonical JSON))`. The canonical form sorts object keys and
+removes whitespace, so key order and formatting do not change the hash. Every field is covered,
+`description` included, so any change gives a new hash and therefore a new mandate. Array order
+is kept: listing the same payees in another order gives another hash. Validate first, then hash.
+
+The hash is what goes on-chain. Anyone holding the mandate JSON can re-hash it and compare.
+Fixed vectors: `tests/fixtures/mandates/hash-vectors.json`.
+
 ## Error codes
 
 | Code                    | Message                                                                      |

@@ -17,6 +17,7 @@
     "build": "tsc -b"
   },
   "dependencies": {
+    "@noble/hashes": "2.4.0",
     "ajv": "8.17.1"
   }
 }

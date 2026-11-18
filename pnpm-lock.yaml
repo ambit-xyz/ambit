@@ -87,6 +87,9 @@ importers:
 
   packages/mandate:
     dependencies:
+      '@noble/hashes':
+        specifier: 2.4.0
+        version: 2.4.0
       ajv:
         specifier: 8.17.1
         version: 8.17.1
