@@ -9,6 +9,7 @@
 //! It does not track period totals (the OpenZeppelin spending-limit policy does), check
 //! signatures (verifier contracts do) or check expiry (`valid_until` on the rule does).
 
+mod check;
 mod contract;
 mod error;
 mod events;
