@@ -121,7 +121,7 @@ export const deployAccount = async (opts: {
 };
 
 /** Read-only contract call through simulation. Nothing is signed or submitted. */
-const simulateView = async (
+export const simulateView = async (
   net: NetworkConfig,
   name: NetworkName,
   contract: string,

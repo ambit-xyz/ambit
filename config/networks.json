@@ -6,13 +6,14 @@
     "usdcIssuer": "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5",
     "usdcSac": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
     "accountWasmHash": "c514d35ea67eaea9bfc1fb3327854c0c06111bc1ddebd4fe217c504c1004b9e1",
+    "ambitPolicyWasmHash": "f991b6363cf78d448e99bc8af80f26d9b90adddb54f4c995a34885fea305e994",
     "verifiers": {
       "ed25519": "CAAVTMCBXEIBPR64EAASKFXERVPYFZA2JYP5A3BG6PESWEFUJX5IHKN4",
       "webauthn": "CC7EKIHQP3TN4CARQDND6CEOY2UXLWWC2X5GHTD5NLAT7BG5GPZIOM3F"
     },
     "policies": {
       "spendingLimit": "CC3CEYQAP6NPNFIYSWL5MVZRCPJZGWX4XO7WDEJOUVGO2FZX5OONYPA5",
-      "ambitPolicy": null
+      "ambitPolicy": "CC2WZIPBL5HONQMDOIWTW7ZS5IN7MFOZCU7554RQ7KHPRSI52GXLLPBE"
     }
   },
   "mainnet": {
@@ -22,6 +23,7 @@
     "usdcIssuer": null,
     "usdcSac": null,
     "accountWasmHash": "c514d35ea67eaea9bfc1fb3327854c0c06111bc1ddebd4fe217c504c1004b9e1",
+    "ambitPolicyWasmHash": null,
     "verifiers": { "ed25519": null, "webauthn": null },
     "policies": { "spendingLimit": null, "ambitPolicy": null }
   }

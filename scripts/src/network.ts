@@ -9,11 +9,12 @@ export type NetworkConfig = {
   usdcIssuer: string | null;
   usdcSac: string | null;
   accountWasmHash: string | null;
+  ambitPolicyWasmHash: string | null;
   verifiers: { ed25519: string | null; webauthn: string | null };
   policies: { spendingLimit: string | null; ambitPolicy: string | null };
 };
 
-const CONFIG_URL = new URL("../../config/networks.json", import.meta.url);
+export const CONFIG_URL = new URL("../../config/networks.json", import.meta.url);
 
 export const isNetworkName = (value: string): value is NetworkName =>
   value === "testnet" || value === "mainnet";
