@@ -1,7 +1,10 @@
 use soroban_sdk::contracterror;
 
+/// Refusal reasons. Codes start at 9000 so they never collide with the OpenZeppelin account
+/// (3000 to 3018) or spending-limit (3220 to 3227) errors that can appear in the same
+/// transaction.
 #[contracterror]
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u32)]
 pub enum AmbitError {
     /// No config for this account and rule: never installed, or uninstalled.

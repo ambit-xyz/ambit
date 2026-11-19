@@ -12,6 +12,9 @@ const DAY_IN_LEDGERS: u32 = 17_280;
 /// Extra lifetime kept after a rule's `valid_until`, so the config outlives the rule.
 const TTL_MARGIN: u32 = 7 * DAY_IN_LEDGERS;
 
+/// `enforce` extends the config once less than this lifetime is left.
+const TTL_THRESHOLD: u32 = 7 * DAY_IN_LEDGERS;
+
 /// What the owner installs on a mandate rule. Also what `get_config` returns.
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -48,6 +51,26 @@ pub fn set(e: &Env, smart_account: &Address, rule: &ContextRule, params: &AmbitP
     e.storage()
         .persistent()
         .extend_ttl(&k, extend_to, extend_to);
+}
+
+/// Called from `enforce`. Extends the config only when it is close to expiry, so most payments
+/// do not pay for a TTL write.
+pub fn extend(e: &Env, smart_account: &Address, rule: &ContextRule) {
+    let extend_to = lifetime_for(e, rule);
+    e.storage().persistent().extend_ttl(
+        &key(smart_account, rule.id),
+        TTL_THRESHOLD.min(extend_to),
+        extend_to,
+    );
+}
+
+/// Ledgers left before the config is archived. Tests only.
+#[cfg(test)]
+pub fn ttl(e: &Env, smart_account: &Address, rule_id: u32) -> u32 {
+    use soroban_sdk::testutils::storage::Persistent as _;
+    e.storage()
+        .persistent()
+        .get_ttl(&key(smart_account, rule_id))
 }
 
 pub fn remove(e: &Env, smart_account: &Address, rule_id: u32) {

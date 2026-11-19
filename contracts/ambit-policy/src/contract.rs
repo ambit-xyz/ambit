@@ -5,6 +5,7 @@ use stellar_accounts::{
 };
 
 use crate::{
+    check,
     error::AmbitError,
     events::{Installed, Uninstalled},
     storage::{self, AmbitParams},
@@ -19,22 +20,22 @@ impl Policy for AmbitPolicy {
     type AccountParams = AmbitParams;
 
     /// Called by the smart account inside `__check_auth` for every authorization on the rule.
-    /// A panic refuse the authorization. Must never emit an event
+    /// A panic refuses the authorization. Must never emit an event.
     fn enforce(
         e: &Env,
-        _context: Context,
+        context: Context,
         _authenticated_signers: Vec<Signer>,
         context_rule: ContextRule,
         smart_account: Address,
     ) {
         smart_account.require_auth();
-        if storage::get(e, &smart_account, context_rule.id).is_none() {
-            panic_with_error!(e, AmbitError::NotInstalled);
+        let Some(config) = storage::get(e, &smart_account, context_rule.id) else {
+            panic_with_error!(e, AmbitError::NotInstalled)
+        };
+        if let Err(err) = check::check(e, &context, &config, &context_rule, &smart_account) {
+            panic_with_error!(e, err)
         }
-
-        // The payment checks are not implemented yet, so every call is refused. Failing
-        // closed means a deployment of this version can never let a payment through.
-        panic_with_error!(e, AmbitError::FunctionNotAllowed);
+        storage::extend(e, &smart_account, &context_rule);
     }
 
     /// Called by the smart account when the owner adds this policy to a rule.
@@ -78,5 +79,25 @@ impl AmbitPolicy {
     /// The config enforced for a rule, or `None` if not installed. Read-only.
     pub fn get_config(e: Env, smart_account: Address, rule_id: u32) -> Option<AmbitParams> {
         storage::get(&e, &smart_account, rule_id)
+    }
+
+    /// Would a `transfer` of `amount` to `to` pass checks 4 and 5 on this rule? Returns 0 if
+    /// yes, otherwise the `AmbitError` code `enforce` would panic with. Read-only, needs no
+    /// signature. Checks 1 to 3 are about the call itself, which the caller builds, so they are
+    /// not repeated here.
+    pub fn check_payment(
+        e: Env,
+        smart_account: Address,
+        rule_id: u32,
+        to: Address,
+        amount: i128,
+    ) -> u32 {
+        let Some(config) = storage::get(&e, &smart_account, rule_id) else {
+            return AmbitError::NotInstalled as u32;
+        };
+        match check::check_payee_and_amount(&config, &to, amount) {
+            Ok(()) => 0,
+            Err(err) => err as u32,
+        }
     }
 }
