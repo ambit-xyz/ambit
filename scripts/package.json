@@ -8,9 +8,11 @@
     "build": "tsc -b",
     "deploy:account": "tsx src/deploy-account.ts",
     "deploy:policy": "tsx src/deploy-policy.ts",
+    "compile:mandate": "tsc -b ../packages/mandate && tsx src/compile-mandate.ts",
     "test:testnet": "vitest run --config vitest.testnet.config.ts"
   },
   "dependencies": {
+    "@ambit/mandate": "workspace:*",
     "@stellar/stellar-sdk": "16.4.1"
   },
   "devDependencies": {

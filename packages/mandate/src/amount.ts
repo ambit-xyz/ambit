@@ -2,6 +2,9 @@
 
 export const DECIMALS = 7;
 
+/** Largest amount the contracts can hold: `i128::MAX` stroops. */
+export const I128_MAX = 2n ** 127n - 1n;
+
 /** Up to 7 decimals, no sign, no exponent, no leading zeros ("0.5" is fine, "00.5" is not). */
 export const AMOUNT_PATTERN = "^(0|[1-9][0-9]*)(\\.[0-9]{1,7})?$";
 

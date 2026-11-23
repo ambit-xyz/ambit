@@ -1,7 +1,7 @@
 # @ambit/mandate
 
-The `ambit-mandate/0` format: JSON Schema, validator and error codes. No network or file code,
-runs in the browser and in Node.
+The `ambit-mandate/0` format: JSON Schema, validator, error codes, hash and compiler. No network
+or file code, runs in the browser and in Node.
 
 ## Example
 
@@ -38,7 +38,8 @@ of December. More examples: `tests/fixtures/mandates/valid/`.
 
 ## Rules
 
-- Amounts are decimal strings with at most 7 decimals, never JSON numbers.
+- Amounts are decimal strings with at most 7 decimals, never JSON numbers, and at most
+  `i128::MAX` stroops.
 - Unknown fields are an error, so a typo cannot silently drop a limit.
 - `payees`: 1 to 20 unique G- or C-addresses, not the account itself.
 - `validUntil` is after now and after `validFrom`, and at most 366 days ahead.
@@ -75,6 +76,56 @@ is kept: listing the same payees in another order gives another hash. Validate f
 The hash is what goes on-chain. Anyone holding the mandate JSON can re-hash it and compare.
 Fixed vectors: `tests/fixtures/mandates/hash-vectors.json`.
 
+## Compile
+
+`compile` validates a mandate and turns it into the parameters of the two owner calls that
+install it on the smart account:
+
+1. `add_context_rule(rule.contextType, rule.name, rule.validUntil, rule.signers, { [rule.policies[0]]: ambitPolicyParams })`
+2. `add_policy(ruleId, spendingLimitPolicy, spendingLimitParams)`, where `ruleId` is what call 1
+   returned.
+
+`ambit-policy` is installed with the rule and the spending limit is added after it, so
+`ambit-policy` runs first.
+
+```ts
+import { compile } from "@ambit/mandate";
+
+const result = compile(JSON.parse(text), {
+  network: "testnet",
+  now: ledger.closeTime, // the time of `currentLedger`
+  currentLedger: ledger.sequence,
+  usdcSac: config.testnet.usdcSac, // all addresses from config/networks.json
+  ed25519Verifier: config.testnet.verifiers.ed25519,
+  ambitPolicy: config.testnet.policies.ambitPolicy,
+  spendingLimit: config.testnet.policies.spendingLimit,
+});
+if (!result.ok) throw new Error(result.errors.map((e) => e.message).join("\n"));
+const { rule, ambitPolicyParams, spendingLimitPolicy, spendingLimitParams } = result.compiled;
+```
+
+| Mandate                                         | Output                                                                                   |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `asset.contract`                                | `rule.contextType`: `CallContract(asset.contract)`                                       |
+| `agent.signer.publicKey`                        | `rule.signers`: `External(ed25519Verifier, 32-byte public key)`                          |
+| `validUntil`                                    | `rule.validUntil`: `currentLedger + ceil((validUntil - now) / 5 s)`                      |
+| mandate hash                                    | `rule.name`: `ambit:` + first 8 hex characters (14 bytes, limit 20)                      |
+| mandate hash, `maxPerPayment`, `payees`         | `ambitPolicyParams`, amounts in stroops (`bigint`)                                       |
+| `maxPerPeriod`, `period`                        | `spendingLimitParams`, period `1h` 720, `1d` 17,280, `7d` 120,960, `30d` 518,400 ledgers |
+| `id`, `description`, `agent.label`, `validFrom` | not on-chain                                                                             |
+
+The output is plain data (`bigint`, `Uint8Array`, strings), not XDR. Encoding it for a
+transaction is left to the caller, so this package has no Stellar SDK dependency.
+
+`compile` is pure: it reads no clock, network or file, and the same input and context give the
+same output. Pass `now` and `currentLedger` read together. Ledger close time is about 5 seconds
+but not fixed, so `rule.validUntil` and the period are approximate, and rounding up can add one
+ledger past the written end date. An invalid context (negative ledger, a G-address where a
+contract is expected) throws.
+
+Expected outputs for the valid fixtures: `tests/fixtures/mandates/compile-vectors.json`, computed
+outside this code.
+
 ## Error codes
 
 | Code                    | Message                                                                      |
@@ -84,6 +135,7 @@ Fixed vectors: `tests/fixtures/mandates/hash-vectors.json`.
 | `invalidAddress`        | Field `x` is not a valid Stellar address.                                    |
 | `networkMismatch`       | This mandate is for another network.                                         |
 | `amountNotPositive`     | Field `x` must be more than 0.                                               |
+| `amountTooLarge`        | Field `x` is larger than the contracts can hold.                             |
 | `perPaymentAbovePeriod` | The cap per payment is larger than the cap per period.                       |
 | `pilotCap`              | During the pilot a mandate can allow at most 100 USDC per period on mainnet. |
 | `assetNotSupported`     | Only USDC is supported in this version.                                      |

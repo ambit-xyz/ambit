@@ -117,6 +117,9 @@ importers:
 
   scripts:
     dependencies:
+      '@ambit/mandate':
+        specifier: workspace:*
+        version: link:../packages/mandate
       '@stellar/stellar-sdk':
         specifier: 16.4.1
         version: 16.4.1

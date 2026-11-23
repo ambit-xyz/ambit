@@ -1,5 +1,5 @@
 import { Ajv2020, type ErrorObject } from "ajv/dist/2020.js";
-import { toStroops } from "./amount.js";
+import { I128_MAX, toStroops } from "./amount.js";
 import { type MandateError, mandateError } from "./errors.js";
 import { mandateSchema } from "./schema.js";
 import { isAccountAddress, isContractAddress } from "./strkey.js";
@@ -71,6 +71,8 @@ const checkLimits = (m: Mandate): MandateError[] => {
   const errors: MandateError[] = [];
   if (perPayment <= 0n) errors.push(mandateError("amountNotPositive", "limits.maxPerPayment"));
   if (perPeriod <= 0n) errors.push(mandateError("amountNotPositive", "limits.maxPerPeriod"));
+  if (perPayment > I128_MAX) errors.push(mandateError("amountTooLarge", "limits.maxPerPayment"));
+  if (perPeriod > I128_MAX) errors.push(mandateError("amountTooLarge", "limits.maxPerPeriod"));
   if (perPayment > perPeriod) errors.push(mandateError("perPaymentAbovePeriod", "limits"));
   if (m.network === "mainnet" && perPeriod > PILOT_CAP_STROOPS) {
     errors.push(mandateError("pilotCap", "limits.maxPerPeriod"));
