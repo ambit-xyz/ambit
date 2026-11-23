@@ -36,4 +36,8 @@ pub enum AmbitError {
 
     /// The policy is already installed for this account and rule.
     AlreadyInstalled = 9010,
+
+    /// No signer of the rule signed. On a rule with policies the account does not require its
+    /// signers itself and leaves that to the policies, so an empty signer map reaches `enforce`.
+    NoSigner = 9011,
 }

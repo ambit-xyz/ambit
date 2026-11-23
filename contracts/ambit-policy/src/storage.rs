@@ -97,6 +97,9 @@ pub fn validate(e: &Env, params: &AmbitParams, rule: &ContextRule) {
     if !matches!(rule.context_type, ContextRuleType::CallContract(_)) {
         panic_with_error!(e, AmbitError::InvalidParams)
     }
+    if rule.signers.is_empty() {
+        panic_with_error!(e, AmbitError::InvalidParams)
+    }
     if params.max_per_payment <= 0 {
         panic_with_error!(e, AmbitError::InvalidParams)
     }
