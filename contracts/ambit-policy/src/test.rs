@@ -5,7 +5,7 @@ use soroban_sdk::{
     testutils::{Address as _, Events as _, Ledger as _},
     vec, Address, BytesN, Env, Error, Event, IntoVal, String, Symbol, Val, Vec,
 };
-use stellar_accounts::smart_account::{ContextRule, ContextRuleType};
+use stellar_accounts::smart_account::{ContextRule, ContextRuleType, Signer};
 
 use crate::{
     events::{Installed, Uninstalled},
@@ -17,6 +17,7 @@ struct Setup {
     policy: AmbitPolicyClient<'static>,
     account: Address,
     usdc: Address,
+    agent: Signer,
 }
 
 fn setup() -> Setup {
@@ -26,11 +27,13 @@ fn setup() -> Setup {
     let policy = AmbitPolicyClient::new(&env, &id);
     let account = Address::generate(&env);
     let usdc = Address::generate(&env);
+    let agent = Signer::Delegated(Address::generate(&env));
     Setup {
         env,
         policy,
         account,
         usdc,
+        agent,
     }
 }
 
@@ -39,7 +42,7 @@ fn rule(s: &Setup, id: u32, context_type: ContextRuleType) -> ContextRule {
         id,
         context_type,
         name: String::from_str(&s.env, "ambit:test"),
-        signers: Vec::new(&s.env),
+        signers: vec![&s.env, s.agent.clone()],
         signer_ids: Vec::new(&s.env),
         policies: Vec::new(&s.env),
         policy_ids: Vec::new(&s.env),
@@ -120,6 +123,7 @@ fn install_without_the_account_signature_fails() {
     let s = Setup {
         account: Address::generate(&env),
         usdc: Address::generate(&env),
+        agent: Signer::Delegated(Address::generate(&env)),
         env,
         policy,
     };
@@ -210,6 +214,16 @@ fn invalid_params_are_refused() {
 }
 
 #[test]
+fn a_rule_without_signers_is_refused() {
+    let s = setup();
+    let p = params(&s.env, payees(&s.env, 1), 1);
+    let mut r = usdc_rule(&s, 1);
+    r.signers = Vec::new(&s.env);
+    assert_eq!(install_error(&s, &p, &r), code(AmbitError::InvalidParams));
+    assert_eq!(s.policy.get_config(&s.account, &1), None);
+}
+
+#[test]
 fn twenty_payees_are_accepted() {
     let s = setup();
     let p = params(&s.env, payees(&s.env, MAX_PAYEES), 1);
@@ -255,7 +269,7 @@ fn uninstall_then_enforce_is_refused() {
     s.policy.install(&p, &usdc_rule(&s, 1), &s.account);
     s.policy.uninstall(&usdc_rule(&s, 1), &s.account);
 
-    let signers = Vec::new(&s.env);
+    let signers = vec![&s.env, s.agent.clone()];
     let err = s
         .policy
         .try_enforce(
@@ -304,7 +318,7 @@ fn transfer_from_address(s: &Setup, from: &Address, to: &Address, amount: i128) 
 
 /// Runs `enforce` on rule 1 and returns the refusal, if any.
 fn enforce(s: &Setup, context: &Context) -> Result<(), Error> {
-    let signers = Vec::new(&s.env);
+    let signers = vec![&s.env, s.agent.clone()];
     match s
         .policy
         .try_enforce(context, &signers, &usdc_rule(s, 1), &s.account)
@@ -324,6 +338,25 @@ fn a_payment_inside_the_mandate_passes() {
     let payee = install_mandate(&s);
     assert_eq!(enforce(&s, &transfer(&s, &payee, 1)), Ok(()));
     assert_eq!(enforce(&s, &transfer(&s, &payee, CAP)), Ok(()));
+}
+
+/// The account passes an empty list when no signer of the rule signed. Every check after this
+/// one would pass, so only the signer check can refuse it.
+#[test]
+fn a_payment_no_signer_signed_is_refused() {
+    let s = setup();
+    let payee = install_mandate(&s);
+    let err = s
+        .policy
+        .try_enforce(
+            &transfer(&s, &payee, 1),
+            &Vec::new(&s.env),
+            &usdc_rule(&s, 1),
+            &s.account,
+        )
+        .unwrap_err()
+        .unwrap();
+    assert_eq!(err, code(AmbitError::NoSigner));
 }
 
 #[test]
@@ -546,7 +579,7 @@ fn enforce_extends_the_config_only_when_close_to_expiry() {
         s.env
             .as_contract(&s.policy.address, || storage::ttl(&s.env, &s.account, 1))
     };
-    let signers = Vec::new(&s.env);
+    let signers = vec![&s.env, s.agent.clone()];
     let pay = || {
         s.policy
             .enforce(&transfer(&s, &payee, 1), &signers, &open_rule, &s.account)

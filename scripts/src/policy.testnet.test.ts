@@ -52,6 +52,7 @@ describe("ambit-policy on testnet", () => {
     invoke({ network, config, source, contract, fn, args, ...(signer ? { signer } : {}) });
   const asOwner = (): AccountSigner => ({ account, key: owner, verifier, ruleIds: [0] });
   const asAgent = (): AccountSigner => ({ account, key: agent, verifier, ruleIds: [ruleId] });
+  const withoutKey = (): AccountSigner => ({ account, verifier, ruleIds: [ruleId] });
   const pay = (to: string, amount: bigint) =>
     run(token, "transfer", [addr(account), addr(to), i128(amount)], asAgent());
   const balance = async (who: string) =>
@@ -175,6 +176,15 @@ describe("ambit-policy on testnet", () => {
     expect(paid.ok).toBe(false);
     if (paid.ok) return;
     expect(paid.codes).toContain(9006);
+  });
+
+  it("refuses a payment no signer signed, with the Ambit code first", async () => {
+    const paid = await run(token, "transfer", [addr(account), addr(payee), i128(1n)], withoutKey());
+    expect(paid.ok).toBe(false);
+    if (paid.ok) return;
+    expect(paid.codes).toContain(9011);
+    // ambit-policy runs first, so the spending limit (3223 for the same reason) never runs.
+    expect(paid.codes).not.toContain(3223);
   });
 
   it("refuses an amount above the cap per payment", async () => {

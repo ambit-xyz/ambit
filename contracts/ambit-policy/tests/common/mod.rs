@@ -109,6 +109,8 @@ pub struct World {
     pub spending_limit: Address,
     /// The mandate rule, once installed.
     pub rule_id: u32,
+    /// The spending limit's policy id on the mandate rule, once added.
+    pub limit_id: u32,
     pub payee: Address,
     nonce: Cell<i64>,
 }
@@ -159,6 +161,7 @@ impl World {
             policy,
             spending_limit,
             rule_id: u32::MAX,
+            limit_id: u32::MAX,
             payee,
             nonce: Cell::new(0),
         }
@@ -178,9 +181,29 @@ impl World {
         w
     }
 
+    /// The default mandate with only the first of its two transactions done: the rule exists
+    /// with `ambit-policy`, the spending limit is not added yet.
+    pub fn without_limit() -> Self {
+        let mut w = Self::empty();
+        let valid_until = Some(w.env.ledger().sequence() + DAY);
+        w.add_rule(&Mandate {
+            payees: std::vec![w.payee.clone()],
+            max_per_payment: CAP,
+            period_cap: PERIOD_CAP,
+            valid_until,
+        });
+        w
+    }
+
     /// The owner adds the mandate rule with `ambit-policy`, then adds the spending limit as a
     /// second policy so the two run in that order.
     pub fn install(&mut self, m: &Mandate) {
+        self.add_rule(m);
+        self.add_limit(m.period_cap);
+    }
+
+    /// First transaction of a mandate: the rule, with `ambit-policy` as its only policy.
+    pub fn add_rule(&mut self, m: &Mandate) {
         let env = &self.env;
         let params = AmbitParams {
             mandate_hash: BytesN::from_array(env, &[7; 32]),
@@ -211,20 +234,39 @@ impl World {
             &policies,
         );
         self.rule_id = rule.id;
+    }
 
+    /// Second transaction of a mandate: the spending limit, after `ambit-policy`.
+    pub fn add_limit(&mut self, period_cap: i128) {
+        let env = &self.env;
         let limit = oz_spending_limit::SpendingLimitAccountParams {
-            spending_limit: m.period_cap,
+            spending_limit: period_cap,
             period_ledgers: PERIOD,
         };
         let args: Vec<Val> = vec![
             env,
-            rule.id.into_val(env),
+            self.rule_id.into_val(env),
             self.spending_limit.into_val(env),
             limit.into_val(env),
         ];
         self.sign_as(&self.owner, OWNER_RULE, &self.account, "add_policy", &args);
-        self.account()
-            .add_policy(&rule.id, &self.spending_limit, &limit.into_val(env));
+        self.limit_id =
+            self.account()
+                .add_policy(&self.rule_id, &self.spending_limit, &limit.into_val(env));
+    }
+
+    /// The owner removes the spending limit from the mandate rule, leaving `ambit-policy` alone.
+    pub fn remove_limit(&self) {
+        let env = &self.env;
+        let args: Vec<Val> = vec![env, self.rule_id.into_val(env), self.limit_id.into_val(env)];
+        self.sign_as(
+            &self.owner,
+            OWNER_RULE,
+            &self.account,
+            "remove_policy",
+            &args,
+        );
+        self.account().remove_policy(&self.rule_id, &self.limit_id);
     }
 
     pub fn account(&self) -> oz_account::Client<'_> {
@@ -269,6 +311,19 @@ impl World {
     pub fn sign(
         &self,
         key: &Key,
+        rule_id: u32,
+        contract: &Address,
+        fn_name: &str,
+        args: &Vec<Val>,
+    ) -> Signed {
+        self.sign_with(Some(key), rule_id, contract, fn_name, args)
+    }
+
+    /// `sign`, or with `key` set to `None`, an entry anyone can build without any key: the
+    /// rule is selected and the signer map is empty.
+    pub fn sign_with(
+        &self,
+        key: Option<&Key>,
         rule_id: u32,
         contract: &Address,
         fn_name: &str,
@@ -319,8 +374,12 @@ impl World {
             .sha256(&soroban_sdk::xdr::ToXdr::to_xdr(digest_preimage, env))
             .to_bytes();
 
+        let signers = match key {
+            Some(key) => map![env, (key.signer.clone(), key.sign(env, &digest))],
+            None => Map::new(env),
+        };
         let payload = AuthPayload {
-            signers: map![env, (key.signer.clone(), key.sign(env, &digest))],
+            signers,
             context_rule_ids: rule_ids,
         };
         let payload: Val = payload.into_val(env);
@@ -365,7 +424,19 @@ impl World {
         fn_name: &str,
         args: Vec<Val>,
     ) -> Option<u32> {
-        let signed = self.sign(key, rule_id, contract, fn_name, &args);
+        self.refusal_with(Some(key), rule_id, contract, fn_name, args)
+    }
+
+    /// `refusal_on`, where `None` sends the entry with an empty signer map.
+    pub fn refusal_with(
+        &self,
+        key: Option<&Key>,
+        rule_id: u32,
+        contract: &Address,
+        fn_name: &str,
+        args: Vec<Val>,
+    ) -> Option<u32> {
+        let signed = self.sign_with(key, rule_id, contract, fn_name, &args);
         let context = Context::Contract(ContractContext {
             contract: contract.clone(),
             fn_name: Symbol::new(&self.env, fn_name),
@@ -394,6 +465,21 @@ impl World {
             "transfer",
             self.transfer_args(to, amount),
         )
+    }
+
+    /// Anyone, holding no key, sends `token.transfer(account, to, amount)` with an auth entry
+    /// that selects the mandate rule and carries no signature. Returns whether it went through.
+    pub fn pay_without_key(&self, to: &Address, amount: i128) -> bool {
+        let args = self.transfer_args(to, amount);
+        let signed = self.sign_with(None, self.rule_id, &self.usdc, "transfer", &args);
+        self.env.set_auths(&[signed.entry]);
+        self.env
+            .try_invoke_contract::<Val, soroban_sdk::Error>(
+                &self.usdc,
+                &Symbol::new(&self.env, "transfer"),
+                args,
+            )
+            .is_ok()
     }
 
     pub fn transfer_args(&self, to: &Address, amount: i128) -> Vec<Val> {

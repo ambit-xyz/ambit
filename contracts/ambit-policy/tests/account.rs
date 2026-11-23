@@ -24,6 +24,7 @@ const FROM_NOT_ACCOUNT: u32 = 9005;
 const PAYEE_NOT_ALLOWED: u32 = 9006;
 const AMOUNT_NOT_POSITIVE: u32 = 9007;
 const AMOUNT_ABOVE_CAP: u32 = 9008;
+const NO_SIGNER: u32 = 9011;
 
 /// Asserts that a refused call moved no USDC and recorded nothing in the spending limit.
 fn assert_nothing_moved(w: &World, spent_before: i128) {
@@ -71,6 +72,78 @@ fn a_payment_signed_by_an_unknown_key_is_refused() {
         Some(UNAUTHORIZED_SIGNER)
     );
     assert_nothing_moved(&w, 0);
+}
+
+// No signer. On a rule with policies, the account does not require any of the rule's signers to
+// have signed: it hands the policies the signers that did, which can be none. An auth entry that
+// selects the mandate rule with an empty signer map needs no key, so anyone can build one. The
+// stock spending limit refuses it, but `ambit-policy` must refuse it too: between the two
+// transactions that create a mandate, and after the owner removes the spending limit,
+// `ambit-policy` is the only policy on the rule.
+
+#[test]
+fn a_payment_without_any_key_is_refused_before_the_spending_limit_is_added() {
+    let w = World::without_limit();
+    let rule = w.account().get_context_rule(&w.rule_id);
+    assert_eq!(rule.policies, vec![&w.env, w.policy.clone()]);
+
+    for _ in 0..3 {
+        assert!(!w.pay_without_key(&w.payee, CAP));
+    }
+    assert_eq!(
+        w.refusal_with(
+            None,
+            w.rule_id,
+            &w.usdc,
+            "transfer",
+            w.transfer_args(&w.payee, CAP)
+        ),
+        Some(NO_SIGNER)
+    );
+    assert_eq!(w.balance(&w.usdc, &w.payee), 0);
+    assert_eq!(w.balance(&w.usdc, &w.account), START_BALANCE);
+
+    // The agent can still pay inside the mandate.
+    assert!(w.pay(&w.payee, CAP));
+}
+
+#[test]
+fn a_payment_without_any_key_is_refused_by_ambit_policy_first() {
+    let w = World::new();
+    assert!(!w.pay_without_key(&w.payee, 1));
+    assert_eq!(
+        w.refusal_with(
+            None,
+            w.rule_id,
+            &w.usdc,
+            "transfer",
+            w.transfer_args(&w.payee, 1)
+        ),
+        Some(NO_SIGNER)
+    );
+    assert_nothing_moved(&w, 0);
+}
+
+#[test]
+fn a_payment_without_any_key_is_refused_after_the_spending_limit_is_removed() {
+    let w = World::new();
+    w.remove_limit();
+    let rule = w.account().get_context_rule(&w.rule_id);
+    assert_eq!(rule.policies, vec![&w.env, w.policy.clone()]);
+
+    assert!(!w.pay_without_key(&w.payee, CAP));
+    assert_eq!(
+        w.refusal_with(
+            None,
+            w.rule_id,
+            &w.usdc,
+            "transfer",
+            w.transfer_args(&w.payee, CAP)
+        ),
+        Some(NO_SIGNER)
+    );
+    assert_eq!(w.balance(&w.usdc, &w.payee), 0);
+    assert!(w.pay(&w.payee, CAP));
 }
 
 // Check 1: the call is to the rule's asset. The account refuses a call to another contract

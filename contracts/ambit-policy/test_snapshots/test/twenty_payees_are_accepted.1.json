@@ -1,6 +1,6 @@
 {
   "generators": {
-    "address": 23,
+    "address": 24,
     "nonce": 0,
     "mux_id": 0
   },
@@ -39,9 +39,6 @@
                       },
                       "val": {
                         "vec": [
-                          {
-                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
-                          },
                           {
                             "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
                           },
@@ -98,6 +95,9 @@
                           },
                           {
                             "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABOHR6"
+                          },
+                          {
+                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABR4OP"
                           }
                         ]
                       }
@@ -166,7 +166,18 @@
                         "symbol": "signers"
                       },
                       "val": {
-                        "vec": []
+                        "vec": [
+                          {
+                            "vec": [
+                              {
+                                "symbol": "Delegated"
+                              },
+                              {
+                                "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                              }
+                            ]
+                          }
+                        ]
                       }
                     },
                     {
@@ -247,9 +258,6 @@
                     "val": {
                       "vec": [
                         {
-                          "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
-                        },
-                        {
                           "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
                         },
                         {
@@ -305,6 +313,9 @@
                         },
                         {
                           "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABOHR6"
+                        },
+                        {
+                          "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABR4OP"
                         }
                       ]
                     }

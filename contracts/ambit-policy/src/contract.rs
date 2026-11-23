@@ -24,11 +24,14 @@ impl Policy for AmbitPolicy {
     fn enforce(
         e: &Env,
         context: Context,
-        _authenticated_signers: Vec<Signer>,
+        authenticated_signers: Vec<Signer>,
         context_rule: ContextRule,
         smart_account: Address,
     ) {
         smart_account.require_auth();
+        if authenticated_signers.is_empty() {
+            panic_with_error!(e, AmbitError::NoSigner)
+        }
         let Some(config) = storage::get(e, &smart_account, context_rule.id) else {
             panic_with_error!(e, AmbitError::NotInstalled)
         };

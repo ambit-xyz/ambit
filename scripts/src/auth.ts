@@ -33,10 +33,14 @@ export const struct = (fields: Record<string, xdr.ScVal>): xdr.ScVal =>
       .map((k) => new xdr.ScMapEntry({ key: sym(k), val: fields[k] as xdr.ScVal })),
   );
 
-/** An ed25519 key that is an External signer on `account`, used under the rules `ruleIds`. */
+/**
+ * An ed25519 key that is an External signer on `account`, used under the rules `ruleIds`.
+ * Without `key`, the entry selects the rules with an empty signer map, which anyone can build.
+ * That is only useful to check that an account refuses it.
+ */
 export type AccountSigner = {
   account: string;
-  key: Keypair;
+  key?: Keypair;
   verifier: string;
   ruleIds: number[];
 };
@@ -73,17 +77,15 @@ export const signAccountEntry = (
       signature_payload: xdr.ScVal.scvBytes(signaturePayload),
     }).toXDR(),
   );
-  creds.signature(
-    struct({
-      context_rule_ids: ruleIds,
-      signers: xdr.ScVal.scvMap([
+  const signers = signer.key
+    ? [
         new xdr.ScMapEntry({
           key: ed25519ExternalSigner(signer.verifier, signer.key.publicKey()),
           val: xdr.ScVal.scvBytes(signer.key.sign(digest)),
         }),
-      ]),
-    }),
-  );
+      ]
+    : [];
+  creds.signature(struct({ context_rule_ids: ruleIds, signers: xdr.ScVal.scvMap(signers) }));
 };
 
 const isEntryFor = (account: string) => (e: xdr.SorobanAuthorizationEntry) =>
