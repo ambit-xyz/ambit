@@ -7,9 +7,7 @@
 // call 2 appends. `ruleId` is returned by call 1, so it is not part of this output.
 //
 // The output is plain data: amounts are bigint stroops, keys and hashes are bytes, addresses are
-// strings. Encoding it for a transaction is the caller's job, so this package keeps no Stellar SDK
-// dependency and runs in the browser.
-
+// strings.
 import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils.js";
 import { toStroops } from "./amount.js";
 import type { MandateError } from "./errors.js";
@@ -18,7 +16,6 @@ import { accountPublicKey, isContractAddress } from "./strkey.js";
 import type { Period } from "./types.js";
 import { type ValidationContext, validateMandate } from "./validate.js";
 
-/** Default ledger close time used to turn dates into ledgers. Real close times vary. */
 export const LEDGER_SECONDS = 5;
 
 /** Length of a spending-limit period in ledgers, at 5 seconds per ledger. */
@@ -46,15 +43,11 @@ const U32_MAX = 0xffff_ffff;
  * when this function runs.
  */
 export type CompileContext = ValidationContext & {
-  /** Ledger sequence that `now` belongs to. */
   currentLedger: number;
-  /** Seconds per ledger for the date conversion. Defaults to `LEDGER_SECONDS`. */
+  /** Defaults to `LEDGER_SECONDS`. */
   ledgerSeconds?: number;
-  /** ed25519 verifier contract for the agent signer. */
   ed25519Verifier: string;
-  /** `ambit-policy` contract. */
   ambitPolicy: string;
-  /** Stock spending-limit policy contract. */
   spendingLimit: string;
 };
 
@@ -67,19 +60,14 @@ export type ExternalSigner = {
 
 /** `AmbitParams` of `ambit-policy`, installed with call 1. */
 export type AmbitPolicyParams = {
-  /** `mandate_hash`: SHA-256 of the canonical mandate. */
   mandateHash: Uint8Array;
-  /** `max_per_payment` in stroops. */
   maxPerPayment: bigint;
-  /** `payees`, in mandate order. */
   payees: string[];
 };
 
 /** `SpendingLimitAccountParams` of the stock spending limit, installed with call 2. */
 export type SpendingLimitParams = {
-  /** `spending_limit` in stroops. */
   spendingLimit: bigint;
-  /** `period_ledgers`. */
   periodLedgers: number;
 };
 
@@ -91,18 +79,14 @@ export type CompiledRule = {
   /** Last ledger the rule is valid in. Approximate: about `validUntil` at the assumed close time. */
   validUntil: number;
   signers: ExternalSigner[];
-  /** Policies installed with the rule: `ambit-policy` only. */
   policies: string[];
 };
 
 export type CompiledMandate = {
-  /** The smart account both calls go to. */
   account: string;
-  /** Mandate hash as 64 lowercase hex characters. */
   mandateHash: string;
   rule: CompiledRule;
   ambitPolicyParams: AmbitPolicyParams;
-  /** Policy contract of call 2, `add_policy`. */
   spendingLimitPolicy: string;
   spendingLimitParams: SpendingLimitParams;
 };
@@ -125,7 +109,6 @@ const assertContext = (ctx: CompileContext, ledgerSeconds: number) => {
 };
 
 /**
- * `currentLedger + ceil((validUntil - now) / ledgerSeconds)`, in integer milliseconds.
  * Rounding up can add at most one ledger past the written end date.
  */
 const toLedger = (validUntil: string, ctx: CompileContext, ledgerSeconds: number): number => {
@@ -136,11 +119,6 @@ const toLedger = (validUntil: string, ctx: CompileContext, ledgerSeconds: number
   return ledger;
 };
 
-/**
- * Validates `input` and compiles it. Pure: the same input and context give the same output, and
- * nothing is read from the clock, the network or the file system. Invalid mandates return the
- * validator's errors. An invalid context is a programming error and throws.
- */
 export const compile = (input: unknown, ctx: CompileContext): CompileResult => {
   const ledgerSeconds = ctx.ledgerSeconds ?? LEDGER_SECONDS;
   assertContext(ctx, ledgerSeconds);
