@@ -36,6 +36,19 @@ reads the WASM back from the chain and checks its hash.
   in `config/networks.json`. If an address is already recorded, `--replace` is needed too.
 - `--source` pays the fees. On testnet it can be left out, as for `deploy:account`.
 
+## Compile vectors
+
+```sh
+python3 scripts/compile-vectors.py           # rewrite the vectors
+python3 scripts/compile-vectors.py --check   # check the committed vectors are current
+```
+
+Writes `tests/fixtures/mandates/compile-vectors.json`: the expected `compile()` output of
+`@ambit/mandate` for every fixture in `tests/fixtures/mandates/valid/`. It is a second
+implementation of the compile rules in Python's standard library, sharing no code with the
+package, so the compiler tests compare against values the compiler did not produce. Run it after
+adding or changing a valid fixture, then `pnpm format`.
+
 ## Testnet tests
 
 ```sh

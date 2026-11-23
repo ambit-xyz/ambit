@@ -6,6 +6,7 @@ export const MESSAGES = {
   invalidAddress: "Field `{path}` is not a valid Stellar address.",
   networkMismatch: "This mandate is for another network.",
   amountNotPositive: "Field `{path}` must be more than 0.",
+  amountTooLarge: "Field `{path}` is larger than the contracts can hold.",
   perPaymentAbovePeriod: "The cap per payment is larger than the cap per period.",
   pilotCap: "During the pilot a mandate can allow at most 100 USDC per period on mainnet.",
   assetNotSupported: "Only USDC is supported in this version.",

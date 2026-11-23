@@ -1,0 +1,166 @@
+{
+  "_comment": "Expected compile() output for each valid fixture, written by scripts/compile-vectors.py. Bytes are hex, stroop amounts are decimal strings. The verifier and policy addresses are test values, not deployments.",
+  "context": {
+    "testnet": {
+      "now": "2026-11-20T00:00:00Z",
+      "currentLedger": 1000000,
+      "ed25519Verifier": "CAAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQC526",
+      "ambitPolicy": "CABAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAFNSZ",
+      "spendingLimit": "CABQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGCK3",
+      "network": "testnet",
+      "usdcSac": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
+    },
+    "mainnet": {
+      "now": "2026-11-20T00:00:00Z",
+      "currentLedger": 1000000,
+      "ed25519Verifier": "CAAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQC526",
+      "ambitPolicy": "CABAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAFNSZ",
+      "spendingLimit": "CABQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGCK3",
+      "network": "mainnet",
+      "usdcSac": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75"
+    }
+  },
+  "vectors": [
+    {
+      "fixture": "valid/basic.json",
+      "compiled": {
+        "account": "CAWPGCR6NZXBN6HZ6A437EUGKWMEBC576SQFL2I666NUZWK2RCG53X7V",
+        "mandateHash": "803594ff35a70fcc3ca89feb8a54c2adf302354e3358d72c875757365dcc077d",
+        "rule": {
+          "contextType": {
+            "type": "CallContract",
+            "contract": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
+          },
+          "name": "ambit:803594ff",
+          "validUntil": 1725760,
+          "signers": [
+            {
+              "type": "External",
+              "verifier": "CAAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQC526",
+              "publicKey": "143ec3d7ef6a34e219a73c6bd1eb30b1e6b06fb535e9e5a7e9324bb30858c57d"
+            }
+          ],
+          "policies": ["CABAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAFNSZ"]
+        },
+        "ambitPolicyParams": {
+          "mandateHash": "803594ff35a70fcc3ca89feb8a54c2adf302354e3358d72c875757365dcc077d",
+          "maxPerPayment": "200000000",
+          "payees": [
+            "GCIH3MURWFMXVT6IDMJLGMJETA5C7YRFIJ6ETUJL372UCJAVU35VN7RI",
+            "GCLU2QIYYIZU5RBKCF474MWUAOH76HRUOZM7JSXOMKV7O7YDDFPOXLZD"
+          ]
+        },
+        "spendingLimitPolicy": "CABQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGCK3",
+        "spendingLimitParams": {
+          "spendingLimit": "1000000000",
+          "periodLedgers": 17280
+        }
+      }
+    },
+    {
+      "fixture": "valid/mainnet-at-pilot-cap-contract-payee.json",
+      "compiled": {
+        "account": "CAWPGCR6NZXBN6HZ6A437EUGKWMEBC576SQFL2I666NUZWK2RCG53X7V",
+        "mandateHash": "5ed082e30c37506e20385803ddb1fc3f21652d4a0098937c19c6079d7dcd4a30",
+        "rule": {
+          "contextType": {
+            "type": "CallContract",
+            "contract": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75"
+          },
+          "name": "ambit:5ed082e3",
+          "validUntil": 1725760,
+          "signers": [
+            {
+              "type": "External",
+              "verifier": "CAAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQC526",
+              "publicKey": "143ec3d7ef6a34e219a73c6bd1eb30b1e6b06fb535e9e5a7e9324bb30858c57d"
+            }
+          ],
+          "policies": ["CABAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAFNSZ"]
+        },
+        "ambitPolicyParams": {
+          "mandateHash": "5ed082e30c37506e20385803ddb1fc3f21652d4a0098937c19c6079d7dcd4a30",
+          "maxPerPayment": "1000000000",
+          "payees": ["CADQOBYHA4DQOBYHA4DQOBYHA4DQOBYHA4DQOBYHA4DQOBYHA4DQP5KR"]
+        },
+        "spendingLimitPolicy": "CABQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGCK3",
+        "spendingLimitParams": {
+          "spendingLimit": "1000000000",
+          "periodLedgers": 518400
+        }
+      }
+    },
+    {
+      "fixture": "valid/smallest-amount-no-valid-from.json",
+      "compiled": {
+        "account": "CAWPGCR6NZXBN6HZ6A437EUGKWMEBC576SQFL2I666NUZWK2RCG53X7V",
+        "mandateHash": "ff204482e8c10bcdc74d4c216486fab78f4b9ecc841fded2cf97915612db48c6",
+        "rule": {
+          "contextType": {
+            "type": "CallContract",
+            "contract": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
+          },
+          "name": "ambit:ff204482",
+          "validUntil": 1725760,
+          "signers": [
+            {
+              "type": "External",
+              "verifier": "CAAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQC526",
+              "publicKey": "143ec3d7ef6a34e219a73c6bd1eb30b1e6b06fb535e9e5a7e9324bb30858c57d"
+            }
+          ],
+          "policies": ["CABAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAFNSZ"]
+        },
+        "ambitPolicyParams": {
+          "mandateHash": "ff204482e8c10bcdc74d4c216486fab78f4b9ecc841fded2cf97915612db48c6",
+          "maxPerPayment": "1",
+          "payees": [
+            "GCIH3MURWFMXVT6IDMJLGMJETA5C7YRFIJ6ETUJL372UCJAVU35VN7RI",
+            "GCLU2QIYYIZU5RBKCF474MWUAOH76HRUOZM7JSXOMKV7O7YDDFPOXLZD"
+          ]
+        },
+        "spendingLimitPolicy": "CABQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGCK3",
+        "spendingLimitParams": {
+          "spendingLimit": "1",
+          "periodLedgers": 720
+        }
+      }
+    },
+    {
+      "fixture": "valid/unicode-description.json",
+      "compiled": {
+        "account": "CAWPGCR6NZXBN6HZ6A437EUGKWMEBC576SQFL2I666NUZWK2RCG53X7V",
+        "mandateHash": "83c465b54cf6a50108d4bf6536a49f56284002b6fe0415bae266225e463062f4",
+        "rule": {
+          "contextType": {
+            "type": "CallContract",
+            "contract": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
+          },
+          "name": "ambit:83c465b5",
+          "validUntil": 1725760,
+          "signers": [
+            {
+              "type": "External",
+              "verifier": "CAAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQC526",
+              "publicKey": "143ec3d7ef6a34e219a73c6bd1eb30b1e6b06fb535e9e5a7e9324bb30858c57d"
+            }
+          ],
+          "policies": ["CABAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAFNSZ"]
+        },
+        "ambitPolicyParams": {
+          "mandateHash": "83c465b54cf6a50108d4bf6536a49f56284002b6fe0415bae266225e463062f4",
+          "maxPerPayment": "200000000",
+          "payees": [
+            "GCIH3MURWFMXVT6IDMJLGMJETA5C7YRFIJ6ETUJL372UCJAVU35VN7RI",
+            "GCLU2QIYYIZU5RBKCF474MWUAOH76HRUOZM7JSXOMKV7O7YDDFPOXLZD"
+          ]
+        },
+        "spendingLimitPolicy": "CABQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGAYDAMBQGCK3",
+        "spendingLimitParams": {
+          "spendingLimit": "1000000000",
+          "periodLedgers": 17280
+        }
+      }
+    }
+  ]
+}

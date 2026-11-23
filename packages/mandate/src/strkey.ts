@@ -34,13 +34,23 @@ const crc16 = (bytes: Uint8Array): number => {
   return crc;
 };
 
-const isValid = (address: string, version: number): boolean => {
-  if (address.length !== 56) return false;
+/** The 32-byte key or contract id, or null if the address is not valid for `version`. */
+const decode = (address: string, version: number): Uint8Array | null => {
+  if (address.length !== 56) return null;
   const bytes = base32Decode(address);
-  if (bytes?.length !== 35 || bytes[0] !== version) return false;
-  const body = bytes.subarray(0, 33);
+  if (bytes?.length !== 35 || bytes[0] !== version) return null;
   const checksum = (bytes[33] ?? 0) | ((bytes[34] ?? 0) << 8); // little endian
-  return crc16(body) === checksum;
+  if (crc16(bytes.subarray(0, 33)) !== checksum) return null;
+  return bytes.slice(1, 33);
+};
+
+const isValid = (address: string, version: number): boolean => decode(address, version) !== null;
+
+/** The 32-byte ed25519 public key of a G-address. Throws if the address is not valid. */
+export const accountPublicKey = (address: string): Uint8Array => {
+  const key = decode(address, VERSION_ACCOUNT);
+  if (!key) throw new Error(`invalid account address: ${address}`);
+  return key;
 };
 
 /** True for a valid ed25519 account address (G...). */
