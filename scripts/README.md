@@ -36,6 +36,34 @@ reads the WASM back from the chain and checks its hash.
   in `config/networks.json`. If an address is already recorded, `--replace` is needed too.
 - `--source` pays the fees. On testnet it can be left out, as for `deploy:account`.
 
+## Compile a mandate
+
+```sh
+pnpm compile:mandate                                     # list the fixtures
+pnpm compile:mandate basic                               # a fixture, latest testnet ledger
+pnpm compile:mandate expired --ledger 1000000 --now 2026-11-20T00:00:00Z   # offline
+pnpm compile:mandate ./my-mandate.json                   # any mandate file
+```
+
+Runs `compile` from `@ambit/mandate` on a mandate and prints the result: the rule, the
+`ambit-policy` params and the spending-limit params of the two owner calls that would install it,
+or the validation errors (exit code 1). Nothing is sent and no key is needed.
+
+The mandate is either a `.json` file path or a fixture from `tests/fixtures/mandates/valid/` and
+`invalid/`, named by any part of its file name that matches only one fixture: `basic`,
+`valid/basic`, `smallest`, `expired`, `tooManyPayees`. A name that matches several (`schema`) or
+none prints the candidates. With no argument, the script lists every fixture.
+
+- `--ledger` and `--now` go together. Without them the latest ledger and its close time are read
+  from the network's RPC, so `rule.validUntil` counts from the real ledger. With them nothing is
+  read from the network and every run gives the same output.
+- Addresses (USDC, verifier, policies) come from `config/networks.json` for `--network`
+  (default `testnet`). Mainnet has no addresses there yet, so `--network mainnet` stops with
+  "not set".
+- A relative file path is taken from the repo root.
+- Bytes print as hex and stroop amounts as decimal strings (20 USDC is `"200000000"`).
+- The mandate package is rebuilt first, so the output reflects the current source.
+
 ## Compile vectors
 
 ```sh

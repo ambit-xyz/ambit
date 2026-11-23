@@ -17,7 +17,8 @@
     "clean": "pnpm -r exec rm -rf dist *.tsbuildinfo",
     "deploy:account": "pnpm --filter @ambit/scripts deploy:account",
     "deploy:policy": "pnpm --filter @ambit/scripts deploy:policy",
-    "test:testnet": "pnpm --filter @ambit/scripts test:testnet"
+    "test:testnet": "pnpm --filter @ambit/scripts test:testnet",
+    "compile:mandate": "pnpm --filter @ambit/scripts compile:mandate"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.6",
