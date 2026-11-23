@@ -7,11 +7,8 @@
 //   pnpm compile:mandate <mandate.json> --ledger 1000000 --now 2026-11-20T00:00:00Z
 //
 // The mandate is a file path or the name of a fixture in `tests/fixtures/mandates/valid/` or
-// `invalid/`: `basic`, `basic.json`, `valid/basic` and `expired` all work if they match one file.
 // Without `--ledger` and `--now`, the latest ledger and its close time are read from the network's
-// RPC. With both, nothing is read from the network, so the output is the same on every run.
-// Addresses come from `config/networks.json`. Bytes print as hex and stroop amounts as strings.
-// A relative file path is taken from the repo root.
+// RPC.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -32,12 +29,9 @@ const { values, positionals } = parseArgs({
 const USAGE =
   "usage: pnpm compile:mandate <fixture name | mandate.json> [--network testnet] [--ledger N --now ISO]";
 
-// pnpm runs this from `scripts/` and does not keep the folder the command was typed in, so a
-// relative path is always taken from the repo root.
 const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const FIXTURES = resolve(ROOT, "tests/fixtures/mandates");
 
-/** Every fixture as `valid/<file>` or `invalid/<file>`. */
 const fixtures = (): string[] =>
   (["valid", "invalid"] as const).flatMap((dir) =>
     readdirSync(resolve(FIXTURES, dir))
@@ -46,7 +40,6 @@ const fixtures = (): string[] =>
       .map((f) => `${dir}/${f}`),
   );
 
-/** Wrong input from the command line: print the reason without a stack trace. */
 function fail(message: string): never {
   console.error(message);
   process.exit(1);
@@ -54,7 +47,6 @@ function fail(message: string): never {
 
 const list = (names: string[]) => names.map((f) => `  ${f}`).join("\n");
 
-/** A file path as given, or the one fixture whose name is or contains `name`. */
 const findMandate = (name: string): string => {
   const asPath = resolve(ROOT, name);
   if (name.endsWith(".json") && existsSync(asPath)) return asPath;
